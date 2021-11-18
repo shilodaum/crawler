@@ -3,6 +3,9 @@ import bs4
 import scrapy
 import time
 
+
+main_url='https://www.indiegogo.com/explore/home?project=all&project=all&sort=trending'
+
 def test_one_web():
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -11,8 +14,11 @@ def test_one_web():
     r = requests.get(adress, headers=headers)
 
     print(r.status_code)
-    print(r.text)
+
+def extract_fields_from_html(html):
+    fields=['owner_name',]
 
 
 if __name__ == '__main__':
+
     test_one_web()

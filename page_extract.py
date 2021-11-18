@@ -20,6 +20,82 @@ import json
 
 main_url = 'https://www.kickstarter.com/discover/categories/technology?page='
 
+def find_attribute_by_regex(prefix, variable_reg, suffix, html_txt):
+    regex = prefix + variable_reg + suffix
+    full_row = re.findall(regex, html_txt)
+    without_prefix = re.sub(prefix, "", full_row[0])
+    idx = without_prefix.find(suffix)
+    result = without_prefix[:idx]
+    # result = re.sub(suffix , "", without_prefix)
+    # # print(result)
+    return result
+
+
+def get_attributes(html_txt):
+    # html_txt_stream = open("item.html", 'rb')
+    # html_txt = html_txt_stream.read()
+    html_txt=html_txt.decode("utf-8")
+
+    attr=dict()
+    # regex for the title:
+    # <meta property="og:title" content="Revopoint POP 2: Precise 3D Scanner with 0.1mm Accuracy"/>
+    title = find_attribute_by_regex(r"<meta property=\"og:title\" content=\"", r".+", r"\"/>", html_txt)
+    print('title =', title)
+
+    attr['title']=title
+    # regex for the creator
+    #
+    creator = find_attribute_by_regex(r"<div class=\"type-14 bold clip ellipsis\">", r".+", "</div><div class=\"mr2\">", html_txt)
+    print('creator = ', creator)
+
+    attr['creator']=creator
+
+
+    # Text (entire html)
+    text = html_txt
+
+    #TODO add this line
+    #attr['text']=text
+    # DollarsPledged
+    # converted_pledged_amount&quot;:617454,
+    DollarsPledged = find_attribute_by_regex(r"converted_pledged_amount&quot;:", r"[0-9]+", r",", html_txt)
+    print('DollarsPledged =', DollarsPledged)
+
+    attr['DollarsPledged']=DollarsPledged
+
+    # DollarGoal
+    # "project_goal_usd":9975.29,
+    DollarGoal = find_attribute_by_regex(r"\"project_goal_usd\":", r'[0-9]+\.?[0-9]+', r",", html_txt)
+    print('DollarGoal =', DollarGoal)
+
+    attr['DollarGoal']=DollarGoal
+
+
+    # NumBackers
+    # backers_count&quot;:1341,&quot;
+    NumBackers = find_attribute_by_regex(r"backers_count&quot;:", r"[0-9]+", r",", html_txt)
+    print('NumBackers =', NumBackers)
+
+    attr['NumBackers']=NumBackers
+
+
+    # DaysToGo
+    # <span class="block type-16 type-28-md bold dark-grey-500"> #### </span>
+    DaysToGo = find_attribute_by_regex(r"<span class=\"block type-16 type-28-md bold dark-grey-500\">", r"[0-9]+",
+                                       r"</span>", html_txt)
+    print('DaysToGo =', DaysToGo)
+
+    attr['DaysToGo']=DaysToGo
+
+    # AllOrNothing
+    # <span data-test-id="deadline-exists"> ### This project will only be funded if it reaches its goal by Sat, January 1 2022 3:00 PM UTC +02:00. ### </span>
+    AllOrNothing = find_attribute_by_regex(r"<span data-test-id=\"deadline-exists\">", r".*", r"</span>", html_txt)
+    print('AllOrNothing = ', AllOrNothing)
+
+    attr['AllOrNothing']=AllOrNothing
+
+    return attr
+
 
 def crawl():
     headers = {
@@ -102,4 +178,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    fill_json()

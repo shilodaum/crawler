@@ -7,7 +7,7 @@ def download_file():
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
                       "Chrome/70.0.3538.77 Safari/537.36"}
-    address = 'https://www.kickstarter.com/projects/2125914059/revopoint-pop2-high-precision-3d-scanner?ref=discovery_category'
+    address = 'https://www.kickstarter.com/projects/cinks-labs/the-solar-system-in-a-sphere?ref=discovery_category'
     r = requests.get(address, headers=headers)
     with open("item.html", 'wb') as f:
         f.write(r.content)
@@ -67,5 +67,5 @@ def get_attributes():
 
 
 if __name__ == '__main__':
-    # download_file()
+    download_file()
     get_attributes()

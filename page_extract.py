@@ -5,7 +5,7 @@ import re
 import json
 import os
 
-SLEEPING_TIME = 1
+SLEEPING_TIME = 5
 main_url = 'https://www.kickstarter.com/discover/categories/technology?page='
 
 def initial():
@@ -27,10 +27,7 @@ def crawl():
     """
 
     # Create the headers dict to get the HTML main page
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-                      "Chrome/70.0.3538.77 Safari/537.36"}
-
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "}
     # Run on 25 pages in the html of the website
     for i in range(25):
 

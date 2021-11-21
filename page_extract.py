@@ -5,7 +5,7 @@ import re
 import json
 import os
 
-SLEEPING_TIME = 5
+SLEEPING_TIME = 10
 main_url = 'https://www.kickstarter.com/discover/categories/technology?page='
 
 def initial():
@@ -27,12 +27,13 @@ def crawl():
     """
 
     # Create the headers dict to get the HTML main page
-    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "}
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0'}
     # Run on 25 pages in the html of the website
     for i in range(25):
 
         # Create the address of the current page
         address = main_url + str(i)
+        time.sleep(SLEEPING_TIME)
         r = requests.get(address, headers=headers)
 
         # If the request succeeded
@@ -61,15 +62,14 @@ def crawl():
                 file_index = i * 12 + comp_idx
                 comp_idx += 1
 
-                # Print the component index for progress checking
-                print(file_index)
-
                 r1 = requests.get(link, headers=headers)
 
                 # Download the HTML file of each component
                 if r1.status_code == 200:
                     with open(f"files/file{file_index}.html", "wb") as f:
                         f.write(r1.content)
+                    # Print the component index for progress checking
+                    print(file_index)
 
 
 def get_links(html):
@@ -170,9 +170,7 @@ def get_attributes(html_content):
 
     # Get the text attribute
     text = html_txt
-
-    # TODO correct this line
-    # attr['text'] = text
+    attr['text'] = text
 
     # Get the DollarsPledged attribute
     DollarsPledged = find_attribute_by_regex(r"converted_pledged_amount&quot;:", r"[0-9]+", ",", html_txt)
@@ -192,8 +190,7 @@ def get_attributes(html_content):
     attr['DaysToGo'] = DaysToGo
 
     # Get the AllOrNothing attribute
-    # TODO correct this line
-    AllOrNothing = find_attribute_by_regex(r"<span data-test-id=\"deadline-exists\">", r".*", "</span>", html_txt)
+    AllOrNothing = find_attribute_by_regex(r"<span data-test-id=\"deadline-exists\">This project will only be funded if it reaches its goal by ", r".*", "</span>", html_txt)
     attr['AllOrNothing'] = AllOrNothing
 
     return attr
@@ -216,13 +213,15 @@ def find_attribute_by_regex(prefix, variable_reg, suffix, html_txt):
     # Find the the regex content with suffix and prefix
     full_row = re.findall(regex, html_txt)
 
-    # remove the prefix and the suffix
-    without_prefix = re.sub(prefix, "", full_row[0])
-    idx = without_prefix.find(suffix)
-    if idx != -1:
-        result = without_prefix[:idx]
-    else:
-        result = without_prefix[:]
+    result = 'not found'
+    if len(full_row) > 0:
+        # remove the prefix and the suffix
+        without_prefix = re.sub(prefix, "", full_row[0])
+        idx = without_prefix.find(suffix)
+        if idx != -1:
+            result = without_prefix[:idx]
+        else:
+            result = without_prefix[:]
 
     return result
 
